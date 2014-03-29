@@ -6,14 +6,31 @@ before_install:
  - travis_retry sudo apt-get install build-essential cmake zlib1g-dev libfreetype6-dev libopenal1 libopenal-dev mesa-common-dev libgl1-mesa-dev libboost1.48-dev libsdl1.2-dev libglew-dev qt-sdk
  - wget http://de.archive.ubuntu.com/ubuntu/pool/main/g/glm/libglm-dev_0.9.5.1-1_all.deb
  - sudo dpkg -i libglm-dev_0.9.5.1-1_all.deb
-script: mkdir build && cd build && cmake --version && cmake .. && make -j1
+script: if [[ ${COVERITY_SCAN_BRANCH} != 1 ]]; then mkdir build && cd build && cmake --version && cmake .. && make -j1 ; fi
 branches:
   only:
     - master
     - travis
+    - coverity_scan
 notifications:
   irc:
     channels:
       - "irc.freenode.net#arxfatalis"
     on_success: change
     on_failure: always
+
+env:
+  global:
+   # The next declration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "ka4pcE7VYGihpJQrFYESvKpr+q1XTtn4z2Nfaw6464fdQgXXbbZF/7GGxiGWkCW1txwrht+sEp65BqKJcWVV4LBxhGC4TvebALNUAmtjVwyaVgIergUiozeoEblQSyN8/Tw5FEqLK/19CGJxNzxkHul6RlpU38OvLCqu4LQhJhA="
+
+addons:
+  coverity_scan:
+    project:
+      name: "arx/ArxLibertatis"
+      description: "ArxLibertatis coverity scan"
+    notification_email: fabianroth64@googlemail.com
+    build_command_prepend: "mkdir build && cd build && cmake .."
+    build_command: "make -j1"
+    branch_pattern: coverity_scan
