@@ -114,7 +114,7 @@ def clearScene():
 
 def setupObject(obj):
     obj.scale = [0.01, 0.01, 0.01]
-    obj.rotation_euler = [radians(-45), 0, 0]
+    obj.rotation_euler = [radians(-150), radians(-20), radians(-20)]
 
     bpy.context.screen.scene.update()
 
@@ -124,13 +124,26 @@ def setupCamera(cam, obj):
         print("Wrong type")
 
     gBox = [obj.matrix_world * Vector(corner) for corner in obj.bound_box]
-    for i in range(8):
-        print(str(i) + ":" + str((gBox[i][0], gBox[i][1], gBox[i][2])))
 
-    left = gBox[0][0]
-    bottom = gBox[0][1]
-    right = gBox[4][0]
-    top = gBox[1][1]
+
+    left = 10000
+    bottom = 10000
+    right = -10000
+    top = -10000
+
+    for i in range(8):
+        left = min(left, gBox[i][0])
+        right = max(right, gBox[i][0])
+
+        bottom = min(bottom, gBox[i][1])
+        top = max(top, gBox[i][1])
+
+        print(str(i) + ": " + str((gBox[i][0], gBox[i][1], gBox[i][2])))
+
+    #left = gBox[0][0]
+    #bottom = gBox[0][1]
+    #right = gBox[4][0]
+    #top = gBox[1][1]
     print((left, bottom, right, top))
 
     width = (fabs(left) + fabs(right)) / 2
@@ -139,12 +152,15 @@ def setupCamera(cam, obj):
     cx = left + width
     cy = bottom + height
 
-    dist = 30
+    dist = 40
 
     angH = atan(width / dist)
     angV = atan(height / dist)
 
-    usedAng = max(angH, angV) * 2
+    if angH > angV:
+        cam.data.angle_x = angH * 2
+    else:
+        cam.data.angle_y = angV * 2
 
     cam.location.x = cx
     cam.location.y = cy
@@ -153,7 +169,6 @@ def setupCamera(cam, obj):
 
     cam.data.type = 'PERSP'
     cam.data.lens_unit = 'FOV'
-    cam.data.angle = usedAng
 
     bpy.context.screen.scene.update()
 
