@@ -3,7 +3,9 @@ include(CompileCheck)
 
 option(DEBUG_EXTRA "Expensive debug options" OFF)
 option(SET_WARNING_FLAGS "Adjust compiler warning flags" ON)
+option(SET_NOISY_WARNING_FLAGS "Enable noisy compiler warnings" OFF)
 option(SET_OPTIMIZATION_FLAGS "Adjust compiler optimization flags" ON)
+
 
 if(MSVC)
 	
@@ -118,10 +120,13 @@ else(MSVC)
 		add_cxxflag("-Woverflow")
 		add_cxxflag("-Wmissing-declarations")
 		add_cxxflag("-Wredundant-decls")
+		add_cxxflag("-Wdouble-promotion")
 		
-		# TODO consider adding these
-		# add_cxxflag("-Wconversion") # very noisy
-		# add_cxxflag("-Wsign-conversion") # very noisy
+		if(SET_NOISY_WARNING_FLAGS)
+			# TODO enable by default as soon as most are silenced
+			add_cxxflag("-Wconversion") # very noisy
+			# add_cxxflag("-Wsign-conversion") # very noisy
+		endif()
 		
 		# clang
 		add_cxxflag("-Wliteral-conversion")
@@ -188,6 +193,8 @@ else(MSVC)
 	
 	if(SET_OPTIMIZATION_FLAGS)
 		
+		add_cxxflag("-fno-rtti")
+		
 		if(MACOSX)
 			# TODO For some reason this check succeeds on OS X, but then
 			# flag causes the actual build to fail :(
@@ -219,6 +226,8 @@ else(MSVC)
 			   AND (NOT CMAKE_CXX_FLAGS_RELEASE MATCHES "-g(|[0-9]|gdb)"))
 				add_cxxflag("-g2")
 			endif()
+			
+			add_cxxflag("-ffast-math")
 			
 		endif()
 		

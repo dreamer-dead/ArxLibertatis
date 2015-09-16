@@ -447,12 +447,12 @@ void ARX_SPEECH_Update() {
 			{
 				if(!io->anims[aspeech[i].mood])
 					aspeech[i].mood = ANIM_TALK_NEUTRAL;
-
-				if(io->anims[aspeech[i].mood]) {
-					if ((io->animlayer[2].cur_anim != io->anims[aspeech[i].mood])
-							||	(io->animlayer[2].flags & EA_ANIMEND))
-					{
-						changeAnimation(io, 2, io->anims[aspeech[i].mood]);
+				
+				ANIM_HANDLE * anim = io->anims[aspeech[i].mood];
+				if(anim) {
+					AnimLayer & layer2 = io->animlayer[2];
+					if(layer2.cur_anim != anim || (layer2.flags & EA_ANIMEND)) {
+						changeAnimation(io, 2, anim);
 					}
 				}
 			}

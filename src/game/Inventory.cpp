@@ -95,7 +95,7 @@ void ARX_INVENTORY_ReOrder();
 
 //------------------------------------------------------------------------------------
 //CInventory Inventory;
-INVENTORY_SLOT inventory[3][INVENTORY_X][INVENTORY_Y];
+INVENTORY_SLOT inventory[INVENTORY_BAGS][INVENTORY_X][INVENTORY_Y];
 INVENTORY_DATA * SecondaryInventory = NULL;
 Entity * DRAGINTER = NULL;
 Entity * ioSteal = NULL;
@@ -140,13 +140,13 @@ void ARX_INVENTORY_Declare_InventoryIn(Entity * io) {
  */
 void CleanInventory() {
 	
-	for(size_t bag = 0; bag < 3; bag++)
+	for(size_t bag = 0; bag < INVENTORY_BAGS; bag++)
 	for(size_t y = 0; y < INVENTORY_Y; y++)
 	for(size_t x = 0; x < INVENTORY_X; x++) {
 		INVENTORY_SLOT & slot = inventory[bag][x][y];
 		
 		slot.io	 = NULL;
-		slot.show = 1;
+		slot.show = true;
 	}
 	
 	g_currentInventoryBag = 0;
@@ -333,7 +333,7 @@ private:
 		for(index_type j = pos.y; j < (pos.y + size_type(item->m_inventorySize.y)); j++) {
 			for(index_type i = pos.x; i < (pos.x + size_type(item->m_inventorySize.x)); i++) {
 				index(pos.bag, i, j).io = NULL;
-				index(pos.bag, i, j).show = 0;
+				index(pos.bag, i, j).show = false;
 			}
 		}
 	}
@@ -368,10 +368,10 @@ private:
 		for(index_type j = pos.y; j < (pos.y + item->m_inventorySize.y); j++) {
 			for (index_type i = pos.x; i < (pos.x + item->m_inventorySize.x); i++) {
 				index(pos.bag, i, j).io = item;
-				index(pos.bag, i, j).show = 0;
+				index(pos.bag, i, j).show = false;
 			}
 		}
-		index(pos).show = 1;
+		index(pos).show = true;
 		
 		return true;
 	}
@@ -532,7 +532,7 @@ public:
 						removeAt(slot.io, Pos(io, bag, i, j));
 					}
 					slot.io = NULL;
-					slot.show = 0;
+					slot.show = false;
 				}
 			}
 		}
@@ -599,7 +599,7 @@ public:
 				for(size_t i = 0; i < width; i++) {
 					if(index(pos.bag, i, j).io == item) {
 						index(pos.bag, i, j).io = NULL;
-						index(pos.bag, i, j).show = 0;
+						index(pos.bag, i, j).show = false;
 					}
 				}
 			}
@@ -613,8 +613,8 @@ public:
 	
 };
 
-Inventory<3, INVENTORY_X, INVENTORY_Y> getPlayerInventory() {
-	return Inventory<3, INVENTORY_X, INVENTORY_Y>(0, inventory, player.bag,
+Inventory<INVENTORY_BAGS, INVENTORY_X, INVENTORY_Y> getPlayerInventory() {
+	return Inventory<INVENTORY_BAGS, INVENTORY_X, INVENTORY_Y>(0, inventory, player.bag,
 	                                              INVENTORY_X, INVENTORY_Y);
 }
 
@@ -756,11 +756,10 @@ bool CanBePutInSecondaryInventory(INVENTORY_DATA * id, Entity * io)
 	   && sInventoryPos.y >= 0
 	   && sInventoryPos.y <= id->m_size.y - s.y
 	) {
-		long y = sInventoryPos.y;
-		long x = sInventoryPos.x;
+		Vec2s pos = sInventoryPos;
 		// first try to stack
 		
-		Entity * ioo = id->slot[x][y].io;
+		Entity * ioo = id->slot[pos.x][pos.y].io;
 		
 		if(   ioo
 		   && ioo->_itemdata->playerstacksize > 1
@@ -781,7 +780,7 @@ bool CanBePutInSecondaryInventory(INVENTORY_DATA * id, Entity * io)
 			return true;
 		}
 		
-		ioo = id->slot[x][y].io;
+		ioo = id->slot[pos.x][pos.y].io;
 		
 		if(!ioo) {
 			long valid = 1;
@@ -789,8 +788,8 @@ bool CanBePutInSecondaryInventory(INVENTORY_DATA * id, Entity * io)
 			if(s.x == 0 || s.y == 0)
 				valid = 0;
 			
-			for(long y2 = y; y2 < y + s.y; y2++)
-			for(long x2 = x; x2 < x + s.x; x2++) {
+			for(long y2 = pos.y; y2 < pos.y + s.y; y2++)
+			for(long x2 = pos.x; x2 < pos.x + s.x; x2++) {
 				if(id->slot[x2][y2].io != NULL) {
 					valid = 0;
 					break;
@@ -798,13 +797,13 @@ bool CanBePutInSecondaryInventory(INVENTORY_DATA * id, Entity * io)
 			}
 			
 			if(valid) {
-				for(long y2 = y; y2 < y + s.y; y2++)
-				for(long x2 = x; x2 < x + s.x; x2++) {
+				for(long y2 = pos.y; y2 < pos.y + s.y; y2++)
+				for(long x2 = pos.x; x2 < pos.x + s.x; x2++) {
 					id->slot[x2][y2].io = io;
-					id->slot[x2][y2].show = 0;
+					id->slot[x2][y2].show = false;
 				}
 				
-				id->slot[x][y].show = 1;
+				id->slot[pos.x][pos.y].show = true;
 				sInventory = -1;
 				return true;
 			}
@@ -856,10 +855,10 @@ bool CanBePutInSecondaryInventory(INVENTORY_DATA * id, Entity * io)
 				for(long y2 = y; y2 < y + s.y; y2++)
 				for(long x2 = x; x2 < x + s.x; x2++) {
 					id->slot[x2][y2].io = io;
-					id->slot[x2][y2].show = 0;
+					id->slot[x2][y2].show = false;
 				}
 				
-				id->slot[x][y].show = 1;
+				id->slot[x][y].show = true;
 				return true;
 			}
 		}
@@ -1050,7 +1049,7 @@ void RemoveFromAllInventories(const Entity * io) {
 		for(long k = 0; k < id->m_size.x; k++) {
 			if(id->slot[k][j].io == io) {
 				id->slot[k][j].io = NULL;
-				id->slot[k][j].show = 1;
+				id->slot[k][j].show = true;
 			}
 		}
 		}
@@ -1293,7 +1292,7 @@ void ARX_INVENTORY_OpenClose(Entity * _io)
 	}
 
 	if(player.Interface & INTER_INVENTORYALL) {
-		ARX_SOUND_PlayInterface(SND_BACKPACK, 0.9F + 0.2F * rnd());
+		ARX_SOUND_PlayInterface(SND_BACKPACK, Random::getf(0.9f, 1.1f));
 		bInventoryClosing = true;
 	}
 }

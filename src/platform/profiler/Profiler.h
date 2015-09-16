@@ -20,9 +20,9 @@
 #ifndef ARX_PLATFORM_PROFILER_PROFILER_H
 #define ARX_PLATFORM_PROFILER_PROFILER_H
 
+#include <string>
+
 #include "platform/Platform.h"
-#include "platform/Thread.h"
-#include "platform/Time.h"
 
 namespace profiler {
 	
@@ -34,24 +34,14 @@ namespace profiler {
 	
 	void registerThread(const std::string& threadName);
 	void unregisterThread();
-	
-	void addProfilePoint(const char* tag, thread_id_type threadId, u64 startTime, u64 endTime);
 }
 
 #if BUILD_PROFILER_INSTRUMENT
 
 class ProfileScope {
 public:
-	explicit ProfileScope(const char* tag)
-		: m_tag(tag)
-		, m_startTime(platform::getTimeUs())
-	{
-		arx_assert(tag != 0 && tag[0] != '\0');
-	}
-	
-	~ProfileScope() {
-		profiler::addProfilePoint(m_tag, Thread::getCurrentThreadId(), m_startTime, platform::getTimeUs());
-	}
+	explicit ProfileScope(const char* tag);
+	~ProfileScope();
 	
 private:
 	const char* m_tag;

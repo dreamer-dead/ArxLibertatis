@@ -1556,10 +1556,7 @@ static bool loadFastScene(const res::path & file, const char * data, const char 
 				
 				float dist = 0.f;
 				for(int h = 0; h < to; h++) {
-					float x = ep2->v[h].p.x - ep2->center.x;
-					float y = ep2->v[h].p.y - ep2->center.y;
-					float z = ep2->v[h].p.z - ep2->center.z;
-					float d = sqrt((x * x) + (y * y) + (z * z));
+					float d = glm::distance(ep2->v[h].p, ep2->center);
 					dist = std::max(dist, d);
 				}
 				ep2->v[0].rhw = dist;
@@ -1982,9 +1979,6 @@ static void EERIE_PORTAL_Poly_Add(EERIEPOLY * ep, const std::string& name, long 
 
 static int BkgAddPoly(EERIEPOLY * ep, EERIE_3DOBJ * eobj) {
 	
-	long type = -1;
-	long val1 = -1;
-	
 	if(TryToQuadify(ep, eobj))
 		return 0;
 	
@@ -2047,10 +2041,7 @@ static int BkgAddPoly(EERIEPOLY * ep, EERIE_3DOBJ * eobj) {
 	epp->area = fdist((epp->v[0].p + epp->v[1].p) * .5f, epp->v[2].p)
 	            * fdist(epp->v[0].p, epp->v[1].p) * .5f;
 	
-	if (type == TYPE_ROOM)
-		epp->room = checked_range_cast<short>(val1);
-	else
-		epp->room = -1;
+	epp->room = -1;
 	
 	eg->nbpoly++;
 	

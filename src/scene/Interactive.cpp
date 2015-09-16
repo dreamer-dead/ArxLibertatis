@@ -382,7 +382,7 @@ void IO_UnlinkAllLinkedObjects(Entity * io) {
 			continue;
 		}
 		
-		linked->angle = Anglef(rnd(), rnd(), 0.f) * Anglef(40.f, 360.f, 0.f) + Anglef(340.f, 0.f, 0.f);
+		linked->angle = Anglef(Random::getf(340.f, 380.f), Random::getf(0.f, 360.f), 0.f);
 		linked->soundtime = 0;
 		linked->soundcount = 0;
 		linked->gameFlags |= GFLAG_NO_PHYS_IO_COL;
@@ -454,16 +454,16 @@ void TREATZONE_AddIO(Entity * io, bool justCollide)
 	TREATZONE_CUR++;
 }
 
-void CheckSetAnimOutOfTreatZone(Entity * io, long num)
-{
+void CheckSetAnimOutOfTreatZone(Entity * io, AnimLayer & layer) {
+	
 	arx_assert(io);
-
-	if( io->animlayer[num].cur_anim &&
+	
+	if( layer.cur_anim &&
 		!(io->gameFlags & GFLAG_ISINTREATZONE) &&
 		fartherThan(io->pos, ACTIVECAM->orgTrans.pos, 2500.f))
 	{
 
-		io->animlayer[num].ctime = io->animlayer[num].cur_anim->anims[io->animlayer[num].altidx_cur]->anim_time - 1;
+		layer.ctime = layer.cur_anim->anims[layer.altidx_cur]->anim_time - 1;
 	}
 }
 
@@ -937,7 +937,7 @@ void RestoreInitialIOStatusOfIO(Entity * io)
 		io->poisonous_count = 0;
 
 		for(long count = 0; count < MAX_ANIM_LAYERS; count++) {
-			io->animlayer[count] = ANIM_USE();
+			io->animlayer[count] = AnimLayer();
 		}
 
 		if(io->obj && io->obj->pbox) {

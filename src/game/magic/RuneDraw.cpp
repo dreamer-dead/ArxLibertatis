@@ -97,16 +97,16 @@ void ARX_SPELLS_UpdateSymbolDraw() {
 				bool tst = false;
 
 				if(!(io->spellcast_data.spell_flags & SPELLCAST_FLAG_NOANIM) && (io->ioflags & IO_NPC)) {
-					ANIM_USE * ause1 = &io->animlayer[1];
+					AnimLayer & layer1 = io->animlayer[1];
 
-					if(ause1->cur_anim == io->anims[ANIM_CAST_START]  && (ause1->flags & EA_ANIMEND)) {
+					if(layer1.cur_anim == io->anims[ANIM_CAST_START]  && (layer1.flags & EA_ANIMEND)) {
 						// TODO why no AcquireLastAnim() like everywhere else?
-						FinishAnim(io, ause1->cur_anim);
-						ANIM_Set(ause1, io->anims[ANIM_CAST_CYCLE]);
+						FinishAnim(io, layer1.cur_anim);
+						ANIM_Set(layer1, io->anims[ANIM_CAST_CYCLE]);
 						tst = true;
-					} else if(ause1->cur_anim == io->anims[ANIM_CAST_CYCLE]) {
+					} else if(layer1.cur_anim == io->anims[ANIM_CAST_CYCLE]) {
 						tst = true;
-					} else if(ause1->cur_anim != io->anims[ANIM_CAST_START]) {
+					} else if(layer1.cur_anim != io->anims[ANIM_CAST_START]) {
 						io->spellcast_data.castingspell = SPELL_NONE;
 					}
 				} else {
@@ -146,7 +146,7 @@ void ARX_SPELLS_UpdateSymbolDraw() {
 				light->pos += angleToVectorXZ(io->angle.getPitch() - 45.f) * 60.f;
 				light->pos += Vec3f(0.f, -120.f, 0.f);
 				
-				float rr = rnd();
+				float rr = Random::getf();
 				light->fallstart=140.f+(float)io->flarecount*0.333333f+rr*5.f;
 				light->fallend=220.f+(float)io->flarecount*0.5f+rr*5.f;
 				light->intensity=1.6f;

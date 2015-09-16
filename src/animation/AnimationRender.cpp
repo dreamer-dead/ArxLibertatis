@@ -349,21 +349,21 @@ void Cedric_ApplyLightingFirstPartRefactor(Entity *io) {
 						
 						long count = 6;
 						while(count--) {
-							Sphere splatSphere = Sphere(sp.origin, rnd() * 30.f + 30.f);
+							Sphere splatSphere = Sphere(sp.origin, Random::getf(30.f, 60.f));
 							SpawnGroundSplat(splatSphere, rgb, 1);
-							sp.origin.y -= rnd() * 150.f;
+							sp.origin.y -= Random::getf(0.f, 150.f);
 
 							ARX_PARTICLES_Spawn_Splat(sp.origin, 200.f, io->_npcdata->blood_color);
 
 							sp.origin = io->pos + randomVec3f() * Vec3f(200.f, 20.f,200.f) - Vec3f(100.f, 10.f, 100.f);
-							sp.radius = rnd() * 100.f + 100.f;
+							sp.radius = Random::getf(100.f, 200.f);
 						}
 
 						LightHandle nn = GetFreeDynLight();
 						if(lightHandleIsValid(nn)) {
 							EERIE_LIGHT * light = lightHandleGet(nn);
 							
-							light->intensity = 0.7f + 2.f * rnd();
+							light->intensity = Random::getf(0.7f, 2.7f);
 							light->fallend = 600.f;
 							light->fallstart = 400.f;
 							light->rgb = Color3f(1.0f, 0.8f, 0.f);
@@ -692,8 +692,8 @@ static void AddFixedObjectHalo(const EERIE_FACE & face, const TransformInfo & t,
 			vect2.x *= len2;
 			vect2.y *= len2;
 
-			vert[1].p.x += (vect1.x + 0.2f - rnd() * 0.1f) * siz;
-			vert[1].p.y += (vect1.y + 0.2f - rnd() * 0.1f) * siz;
+			vert[1].p.x += (vect1.x + Random::getf(0.1f, 0.2f)) * siz;
+			vert[1].p.y += (vect1.y + Random::getf(0.1f, 0.2f)) * siz;
 			vert[1].color = Color(0, 0, 0, 255).toRGBA();
 
 			vert[0].p.z += 0.0001f;
@@ -701,8 +701,8 @@ static void AddFixedObjectHalo(const EERIE_FACE & face, const TransformInfo & t,
 			vert[1].rhw *= .8f;
 			vert[2].rhw *= .8f;
 
-			vert[2].p.x += (vect2.x + 0.2f - rnd() * 0.1f) * siz;
-			vert[2].p.y += (vect2.y + 0.2f - rnd() * 0.1f) * siz;
+			vert[2].p.x += (vect2.x + Random::getf(0.1f, 0.2f)) * siz;
+			vert[2].p.y += (vect2.y + Random::getf(0.1f, 0.2f)) * siz;
 
 			if(halo.flags & HALO_NEGATIVE)
 				vert[2].color = Color(0, 0, 0, 0).toRGBA();
@@ -937,8 +937,6 @@ static void AddAnimatedObjectHalo(HaloInfo & haloInfo, const unsigned short * pa
                                   float invisibility, EERIE_3DOBJ * eobj, Entity * io,
                                   TexturedVertex * tvList) {
 	
-	float & ddist = haloInfo.ddist;
-	float & MAX_ZEDE = haloInfo.MAX_ZEDE;
 	std::vector<HaloRenderInfo> & halos = haloInfo.halos;
 
 	IO_HALO * curhalo = NULL;
@@ -1017,9 +1015,9 @@ static void AddAnimatedObjectHalo(HaloInfo & haloInfo, const unsigned short * pa
 			vert[2].color = colors[second];
 			vert[3].color = colors[second];
 
-			float siz = ddist * (curhalo->radius * (std::sin(arxtime.get_frame_time() * .01f) * .1f + 1.f)) * .6f;
+			float siz = haloInfo.ddist * (curhalo->radius * (std::sin(arxtime.get_frame_time() * .01f) * .1f + 1.f)) * .6f;
 
-			if(io == entities.player() && ddist > 0.8f && !EXTERNALVIEW)
+			if(io == entities.player() && haloInfo.ddist > 0.8f && !EXTERNALVIEW)
 				siz *= 1.5f;
 
 			Vec3f vect1;
@@ -1044,8 +1042,8 @@ static void AddAnimatedObjectHalo(HaloInfo & haloInfo, const unsigned short * pa
 			vect2.x *= len2;
 			vect2.y *= len2;
 
-			vert[1].p.x += (vect1.x + 0.2f - rnd() * 0.1f) * siz;
-			vert[1].p.y += (vect1.y + 0.2f - rnd() * 0.1f) * siz;
+			vert[1].p.x += (vect1.x + Random::getf(0.1f, 0.2f)) * siz;
+			vert[1].p.y += (vect1.y + Random::getf(0.1f, 0.2f)) * siz;
 			vert[1].color = Color(0, 0, 0, 255).toRGBA();
 
 			float valll;
@@ -1066,11 +1064,11 @@ static void AddAnimatedObjectHalo(HaloInfo & haloInfo, const unsigned short * pa
 			vert[0].rhw	*= .98f;
 			vert[3].rhw	*= .98f;
 
-			vert[2].p.x += (vect2.x + 0.2f - rnd() * 0.1f) * siz;
-			vert[2].p.y += (vect2.y + 0.2f - rnd() * 0.1f) * siz;
+			vert[2].p.x += (vect2.x + Random::getf(0.1f, 0.2f)) * siz;
+			vert[2].p.y += (vect2.y + Random::getf(0.1f, 0.2f)) * siz;
 
-			vert[1].p.z = (vert[1].p.z + MAX_ZEDE) * ( 1.0f / 2 );
-			vert[2].p.z = (vert[2].p.z + MAX_ZEDE) * ( 1.0f / 2 );
+			vert[1].p.z = (vert[1].p.z + haloInfo.MAX_ZEDE) * ( 1.0f / 2 );
+			vert[2].p.z = (vert[2].p.z + haloInfo.MAX_ZEDE) * ( 1.0f / 2 );
 
 			if(curhalo->flags & HALO_NEGATIVE)
 				vert[2].color = Color(0, 0, 0, 0).toRGBA();
@@ -1202,39 +1200,39 @@ static void Cedric_AnimateDrawEntityRender(EERIE_3DOBJ * eobj, const Vec3f & pos
 	}
 }
 
-static Vec3f CalcTranslation(ANIM_USE * animuse) {
+static Vec3f CalcTranslation(AnimLayer & layer) {
 	
-	if(!animuse || !animuse->cur_anim) {
+	if(!layer.cur_anim) {
 		return Vec3f_ZERO;
 	}
 	
-	EERIE_ANIM	*eanim = animuse->cur_anim->anims[animuse->altidx_cur];
+	EERIE_ANIM	*eanim = layer.cur_anim->anims[layer.altidx_cur];
 	
 	if(!eanim) {
 		return Vec3f_ZERO;
 	}
 	
 	//Avoiding impossible cases
-	if(animuse->fr < 0) {
-		animuse->fr = 0;
-		animuse->pour = 0.f;
-	} else if(animuse->fr >= eanim->nb_key_frames - 1) {
-		animuse->fr = eanim->nb_key_frames - 2;
-		animuse->pour = 1.f;
+	if(layer.fr < 0) {
+		layer.fr = 0;
+		layer.pour = 0.f;
+	} else if(layer.fr >= eanim->nb_key_frames - 1) {
+		layer.fr = eanim->nb_key_frames - 2;
+		layer.pour = 1.f;
 	}
-	animuse->pour = glm::clamp(animuse->pour, 0.f, 1.f);
+	layer.pour = glm::clamp(layer.pour, 0.f, 1.f);
 	
-	// TODO Prevent invalid memory access, should be fixed properly
-	if(animuse->fr + 1 >= eanim->nb_key_frames)
+	// FIXME animation indices prevent invalid memory access, should be fixed properly
+	if(layer.fr < 0 || layer.fr + 1 >= eanim->nb_key_frames)
 		return Vec3f_ZERO;
 	
 	// FRAME TRANSLATE : Gives the Virtual pos of Main Object
-	if(eanim->frames[animuse->fr].f_translate && !(animuse->flags & EA_STATICANIM)) {
+	if(eanim->frames[layer.fr].f_translate && !(layer.flags & EA_STATICANIM)) {
 		
-		EERIE_FRAME * sFrame = &eanim->frames[animuse->fr];
-		EERIE_FRAME * eFrame = &eanim->frames[animuse->fr+1];
+		EERIE_FRAME * sFrame = &eanim->frames[layer.fr];
+		EERIE_FRAME * eFrame = &eanim->frames[layer.fr+1];
 		// Linear interpolation of object translation (MOVE)
-		return sFrame->translate + (eFrame->translate - sFrame->translate) * animuse->pour;
+		return sFrame->translate + (eFrame->translate - sFrame->translate) * layer.pour;
 	}
 	
 	return Vec3f_ZERO;
@@ -1281,31 +1279,33 @@ static void StoreEntityMovement(Entity * io, Vec3f & ftr, float scale) {
 /*!
  * Animate skeleton
  */
-static void Cedric_AnimateObject(Skeleton * obj, ANIM_USE * animlayer)
+static void Cedric_AnimateObject(Skeleton * obj, AnimLayer * animlayer)
 {
 	std::vector<unsigned char> grps(obj->bones.size());
 
 	for(long count = MAX_ANIM_LAYERS - 1; count >= 0; count--) {
 
-		ANIM_USE * animuse = &animlayer[count];
+		AnimLayer & layer = animlayer[count];
 
-		if(!animuse || !animuse->cur_anim)
+		if(!layer.cur_anim)
 			continue;
 
-		EERIE_ANIM *eanim = animuse->cur_anim->anims[animuse->altidx_cur];
+		EERIE_ANIM *eanim = layer.cur_anim->anims[layer.altidx_cur];
 		if(!eanim)
 			continue;
 
-		if(animuse->fr < 0) {
-			animuse->fr = 0;
-			animuse->pour = 0.f;
-		} else if(animuse->fr >= eanim->nb_key_frames - 1) {
-			animuse->fr = eanim->nb_key_frames - 2;
-			animuse->pour = 1.f;
+		if(layer.fr < 0) {
+			layer.fr = 0;
+			layer.pour = 0.f;
+		} else if(layer.fr >= eanim->nb_key_frames - 1) {
+			layer.fr = eanim->nb_key_frames - 2;
+			layer.pour = 1.f;
 		}
-		animuse->pour = glm::clamp(animuse->pour, 0.f, 1.f);
+		layer.pour = glm::clamp(layer.pour, 0.f, 1.f);
 		
-		arx_assert(animuse->fr < eanim->nb_key_frames);
+		// FIXME animation indices are sometimes negative
+		//arx_assert(animuse->fr >= 0 && animuse->fr < eanim->nb_key_frames);
+		layer.fr = glm::clamp(layer.fr, 0l, long(eanim->nb_key_frames - 1));
 		
 		// Now go for groups rotation/translation/scaling, And transform Linked objects by the way
 		int l = std::min(long(obj->bones.size() - 1), eanim->nb_groups - 1);
@@ -1314,8 +1314,8 @@ static void Cedric_AnimateObject(Skeleton * obj, ANIM_USE * animlayer)
 			if(grps[j])
 				continue;
 
-			const EERIE_GROUP & sGroup = eanim->groups[j+(animuse->fr*eanim->nb_groups)];
-			const EERIE_GROUP & eGroup = eanim->groups[j+(animuse->fr*eanim->nb_groups)+eanim->nb_groups];
+			const EERIE_GROUP & sGroup = eanim->groups[j+(layer.fr*eanim->nb_groups)];
+			const EERIE_GROUP & eGroup = eanim->groups[j+(layer.fr*eanim->nb_groups)+eanim->nb_groups];
 
 			if(!eanim->voidgroups[j])
 				grps[j] = 1;
@@ -1325,9 +1325,9 @@ static void Cedric_AnimateObject(Skeleton * obj, ANIM_USE * animlayer)
 
 				BoneTransform temp;
 
-				temp.quat = Quat_Slerp(sGroup.quat, eGroup.quat, animuse->pour);
-				temp.trans = sGroup.translate + (eGroup.translate - sGroup.translate) * animuse->pour;
-				temp.scale = sGroup.zoom + (eGroup.zoom - sGroup.zoom) * animuse->pour;
+				temp.quat = Quat_Slerp(sGroup.quat, eGroup.quat, layer.pour);
+				temp.trans = sGroup.translate + (eGroup.translate - sGroup.translate) * layer.pour;
+				temp.scale = sGroup.zoom + (eGroup.zoom - sGroup.zoom) * layer.pour;
 
 				bone.init.quat = bone.init.quat * temp.quat;
 				bone.init.trans = temp.trans + bone.transinit_global;
@@ -1480,7 +1480,7 @@ static void Cedric_UpdateBbox2d(const EERIE_3DOBJ & eobj, EERIE_2D_BBOX & box2D)
 /*!
  * \brief Apply animation and draw object
  */
-static void Cedric_AnimateDrawEntity(Skeleton & skeleton, ANIM_USE * animlayer,
+static void Cedric_AnimateDrawEntity(Skeleton & skeleton, AnimLayer * animlayer,
                                      EERIE_EXTRA_ROTATE * extraRotation,
                                      AnimationBlendStatus * animBlend,
                                      EERIE_EXTRA_SCALE & extraScale) {
@@ -1524,7 +1524,7 @@ static void Cedric_AnimateDrawEntity(Skeleton & skeleton, ANIM_USE * animlayer,
 	}
 }
 
-void EERIEDrawAnimQuatUpdate(EERIE_3DOBJ *eobj, ANIM_USE * animlayer,const Anglef & angle, const Vec3f & pos, unsigned long time, Entity *io, bool update_movement) {
+void EERIEDrawAnimQuatUpdate(EERIE_3DOBJ *eobj, AnimLayer * animlayer,const Anglef & angle, const Vec3f & pos, unsigned long time, Entity *io, bool update_movement) {
 
 	ARX_PROFILE_FUNC();
 	
@@ -1552,9 +1552,9 @@ void EERIEDrawAnimQuatUpdate(EERIE_3DOBJ *eobj, ANIM_USE * animlayer,const Angle
 
 	if(time > 0) {
 		for(size_t count = 0; count < MAX_ANIM_LAYERS; count++) {
-			ANIM_USE * animuse = &animlayer[count];
-			if(animuse->cur_anim)
-				PrepareAnim(animuse, time, io);
+			AnimLayer & layer = animlayer[count];
+			if(layer.cur_anim)
+				PrepareAnim(layer, time, io);
 		}
 	}
 
@@ -1563,7 +1563,7 @@ void EERIEDrawAnimQuatUpdate(EERIE_3DOBJ *eobj, ANIM_USE * animlayer,const Angle
 	float scale = (io) ? io->scale : 1.f;
 
 	// Only layer 0 controls movement
-	Vec3f ftr = CalcTranslation(&animlayer[0]);
+	Vec3f ftr = CalcTranslation(animlayer[0]);
 
 
 	if(update_movement)
@@ -1638,7 +1638,7 @@ void EERIEDrawAnimQuatRender(EERIE_3DOBJ *eobj, const Vec3f & pos, Entity *io, f
 	Cedric_AnimateDrawEntityRender(eobj, pos, io, invisibility);
 }
 
-void EERIEDrawAnimQuat(EERIE_3DOBJ *eobj, ANIM_USE * animlayer,const Anglef & angle, const Vec3f & pos, unsigned long time, Entity *io, bool update_movement, float invisibility) {
+void EERIEDrawAnimQuat(EERIE_3DOBJ *eobj, AnimLayer * animlayer,const Anglef & angle, const Vec3f & pos, unsigned long time, Entity *io, bool update_movement, float invisibility) {
 
 	EERIEDrawAnimQuatUpdate(eobj, animlayer,angle, pos, time, io, update_movement);
 	EERIEDrawAnimQuatRender(eobj, pos, io, invisibility);

@@ -10,7 +10,7 @@ if(MSVC)
 		set(CMAKE_LIBRARY_ARCHITECTURE "x86")
 	endif()
 else()
-	cmake_minimum_required(VERSION 2.8)
+	cmake_minimum_required(VERSION 2.8.3)
 endif()
 
 # Eliminate a warning on Windows with CMake 2.8.11
@@ -59,7 +59,9 @@ set(WITH_QT CACHE STRING "The Qt version to use: 4 or 5 or empty (use any)")
 option(UNITY_BUILD "Unity build" OFF)
 option(DEBUG_EXTRA "Expensive debug options" OFF)
 option(SET_WARNING_FLAGS "Adjust compiler warning flags" ON)
+option(SET_NOISY_WARNING_FLAGS "Enable noisy compiler warnings" OFF)
 option(SET_OPTIMIZATION_FLAGS "Adjust compiler optimization flags" ON)
+
 option(USE_CXX11 "Try to use C++11 if available" ON)
 if(NOT DEFINED DEBUG AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set(DEBUG 1)
@@ -333,7 +335,7 @@ list(APPEND ARX_LIBRARIES ${FREETYPE_LIBRARIES})
 # OpenGL
 if(USE_OPENGL)
 	find_package(OpenGL ${OPTIONAL_DEPENDENCY})
-	find_package(GLEW ${OPTIONAL_DEPENDENCY})
+	find_package(GLEW 1.5.2 ${OPTIONAL_DEPENDENCY})
 	add_definitions(-DGLEW_NO_GLU)
 	if(NOT MSVC AND OPENGL_FOUND AND GLEW_FOUND)
 		check_link_library(OpenGL OPENGL_gl_LIBRARY)
@@ -343,7 +345,7 @@ endif()
 
 # OpenAL
 if(USE_OPENAL)
-	find_package(OpenAL 1.1 ${OPTIONAL_DEPENDENCY})
+	find_package(OpenAL ${OPTIONAL_DEPENDENCY})
 	find_package(OpenALEFX)
 	if(NOT MSVC AND OPENAL_FOUND)
 		check_link_library(OpenAL OPENAL_LIBRARY)
@@ -387,9 +389,11 @@ endif()
 find_package(Boost 1.48 REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
 add_definitions(-DBOOST_ALL_NO_LIB)
+# We compile with -fno-rtti and boost is not able to detect that for all compilers.
+add_definitions(-DBOOST_NO_RTTI -DBOOST_NO_TYPEID)
 
 # glm
-find_package(GLM REQUIRED)
+find_package(GLM 0.9.5.0 REQUIRED)
 include_directories(SYSTEM ${GLM_INCLUDE_DIRS})
 add_definitions(-DGLM_FORCE_RADIANS)
 
@@ -470,6 +474,7 @@ if(USE_CXX11)
 	check_cxx11("alignas"                ARX_HAVE_CXX11_ALIGNAS            1900)
 	check_cxx11("alignof"                ARX_HAVE_CXX11_ALIGNOF            1900)
 	check_cxx11("auto"                   ARX_HAVE_CXX11_AUTO               1600)
+	check_cxx11("std::atomic"            ARX_HAVE_CXX11_ATOMIC             1700)
 	check_cxx11("std::forward"           ARX_HAVE_CXX11_FORWARD            1800)
 	check_cxx11("std::integral_constant" ARX_HAVE_CXX11_INTEGRAL_CONSTANT  1500)
 	check_cxx11("std::max_align_t"       ARX_HAVE_CXX11_MAX_ALIGN_T        1700)
@@ -1032,8 +1037,8 @@ else()
 	if(NOT boost_filesystem_abi_matches)
 		add_definitions(
 			# Different names for different Boost versions :/
-			-DBOOST_NO_SCOPED_ENUMS=1
-			-DBOOST_NO_CXX11_SCOPED_ENUMS=1
+			-DBOOST_NO_SCOPED_ENUMS
+			-DBOOST_NO_CXX11_SCOPED_ENUMS
 		)
 	endif()
 	
@@ -1070,9 +1075,8 @@ if(NOT MSVC)
 endif()
 
 if(BUILD_PROFILER_INSTRUMENT)
-	find_package(Boost 1.53 COMPONENTS atomic)
-	if(NOT Boost_ATOMIC_FOUND)
-		message(WARNING "Missing boost atomic, profiler instrumentation disabled")
+	if(NOT ARX_HAVE_CXX11_ATOMIC)
+		message(WARNING "Missing c++11 atomic, profiler instrumentation disabled")
 		set(BUILD_PROFILER_INSTRUMENT 0)
 	endif()
 endif()

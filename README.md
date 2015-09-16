@@ -25,10 +25,10 @@ Reddit: [http://www.reddit.com/r/ArxFatalis/](http://www.reddit.com/r/ArxFatalis
 
 ## Dependencies
 
-* **[CMake](http://www.cmake.org/) 2.8**+ (compile-time only, 2.8.5+ under Windows)
+* **[CMake](http://www.cmake.org/) 2.8.3**+ (compile-time only, 2.8.5+ under Windows)
 * **[zlib](http://zlib.net/)**
 * **[Boost](http://www.boost.org/) 1.48**+ (headers only)
-* **[GLM](http://glm.g-truc.net/) 0.9.2.7**+
+* **[GLM](http://glm.g-truc.net/) 0.9.5.0**+
 * **[FreeType](http://www.freetype.org/) 2.3.0**+
 * **OpenAL 1.1**+ ([OpenAL Soft](http://kcat.strangesoft.net/openal.html) strongly recommended!)
 
@@ -74,6 +74,7 @@ Getting all the dependencies set up for Windows is more tricky. Pre-build depend
 ### Build options:
 
 * `BUILD_TOOLS` (default=ON): Build tools
+* `BUILD_IO_LIBRARY` (default=ON): Build helper library for the Blender plugin
 * `BUILD_CRASHREPORTER` (default=ON): Build the Qt crash reporter gui (default OFF for Mac)
 * `UNITY_BUILD` (default=OFF): Unity build (faster build, better optimizations but no incremental build)
 * `CMAKE_BUILD_TYPE` (default=Release): Set to `Debug` for debug binaries

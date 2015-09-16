@@ -174,29 +174,30 @@ bool ARX_PLAYER_IsInFightMode() {
 	
 	if (player.Interface & INTER_COMBATMODE) return true;
 
-	if(entities.player()->animlayer[1].cur_anim) {
+	const AnimLayer & layer1 = entities.player()->animlayer[1];
+	
+	if(layer1.cur_anim) {
 		
-		ANIM_USE * ause1 = &entities.player()->animlayer[1];
 		ANIM_HANDLE ** alist = entities.player()->anims;
 
-		if ((ause1->cur_anim	==	alist[ANIM_BARE_READY])
-		        ||	(ause1->cur_anim	==	alist[ANIM_BARE_UNREADY])
-		        ||	(ause1->cur_anim	==	alist[ANIM_DAGGER_READY_PART_1])
-		        ||	(ause1->cur_anim	==	alist[ANIM_DAGGER_READY_PART_2])
-		        ||	(ause1->cur_anim	==	alist[ANIM_DAGGER_UNREADY_PART_1])
-		        ||	(ause1->cur_anim	==	alist[ANIM_DAGGER_UNREADY_PART_2])
-		        ||	(ause1->cur_anim	==	alist[ANIM_1H_READY_PART_1])
-		        ||	(ause1->cur_anim	==	alist[ANIM_1H_READY_PART_2])
-		        ||	(ause1->cur_anim	==	alist[ANIM_1H_UNREADY_PART_1])
-		        ||	(ause1->cur_anim	==	alist[ANIM_1H_UNREADY_PART_2])
-		        ||	(ause1->cur_anim	==	alist[ANIM_2H_READY_PART_1])
-		        ||	(ause1->cur_anim	==	alist[ANIM_2H_READY_PART_2])
-		        ||	(ause1->cur_anim	==	alist[ANIM_2H_UNREADY_PART_1])
-		        ||	(ause1->cur_anim	==	alist[ANIM_2H_UNREADY_PART_2])
-		        ||	(ause1->cur_anim	==	alist[ANIM_MISSILE_READY_PART_1])
-		        ||	(ause1->cur_anim	==	alist[ANIM_MISSILE_READY_PART_2])
-		        ||	(ause1->cur_anim	==	alist[ANIM_MISSILE_UNREADY_PART_1])
-		        ||	(ause1->cur_anim	==	alist[ANIM_MISSILE_UNREADY_PART_2])
+		if(   layer1.cur_anim == alist[ANIM_BARE_READY]
+		   || layer1.cur_anim == alist[ANIM_BARE_UNREADY]
+		   || layer1.cur_anim == alist[ANIM_DAGGER_READY_PART_1]
+		   || layer1.cur_anim == alist[ANIM_DAGGER_READY_PART_2]
+		   || layer1.cur_anim == alist[ANIM_DAGGER_UNREADY_PART_1]
+		   || layer1.cur_anim == alist[ANIM_DAGGER_UNREADY_PART_2]
+		   || layer1.cur_anim == alist[ANIM_1H_READY_PART_1]
+		   || layer1.cur_anim == alist[ANIM_1H_READY_PART_2]
+		   || layer1.cur_anim == alist[ANIM_1H_UNREADY_PART_1]
+		   || layer1.cur_anim == alist[ANIM_1H_UNREADY_PART_2]
+		   || layer1.cur_anim == alist[ANIM_2H_READY_PART_1]
+		   || layer1.cur_anim == alist[ANIM_2H_READY_PART_2]
+		   || layer1.cur_anim == alist[ANIM_2H_UNREADY_PART_1]
+		   || layer1.cur_anim == alist[ANIM_2H_UNREADY_PART_2]
+		   || layer1.cur_anim == alist[ANIM_MISSILE_READY_PART_1]
+		   || layer1.cur_anim == alist[ANIM_MISSILE_READY_PART_2]
+		   || layer1.cur_anim == alist[ANIM_MISSILE_UNREADY_PART_1]
+		   || layer1.cur_anim == alist[ANIM_MISSILE_UNREADY_PART_2]
 		   )
 			return true;
 	}
@@ -924,7 +925,7 @@ void ARX_PLAYER_QuickGeneration() {
 	player.skin = old_skin;
 
 	while(player.Attribute_Redistribute) {
-		float rn = rnd();
+		float rn = Random::getf();
 
 		if(rn < 0.25f && player.m_attribute.strength < 18) {
 			player.m_attribute.strength++;
@@ -942,7 +943,7 @@ void ARX_PLAYER_QuickGeneration() {
 	}
 
 	while(player.Skill_Redistribute) {
-		float rn = rnd();
+		float rn = Random::getf();
 
 		if(rn < 0.1f && player.m_skill.stealth < 18) {
 			player.m_skill.stealth++;
@@ -1050,7 +1051,7 @@ void ARX_PLAYER_Modify_XP(long val) {
  */
 void ARX_PLAYER_Poison(float val) {
 	// Make a poison saving throw to see if player is affected
-	if(rnd() * 100.f > player.m_misc.resistPoison) {
+	if(Random::getf(0.f, 100.f) > player.m_misc.resistPoison) {
 		player.poison += val;
 		ARX_SOUND_PlayInterface(SND_PLAYER_POISONED);
 	}
@@ -1128,7 +1129,7 @@ void ARX_PLAYER_FrameCheck(float Framedelay)
 				if(faster < 0.f)
 					faster = 0.f;
 
-				if(rnd() * 100.f > player.m_misc.resistPoison + faster) {
+				if(Random::getf(0.f, 100.f) > player.m_misc.resistPoison + faster) {
 					float dmg = cp * ( 1.0f / 3 );
 
 					if(player.lifePool.current - dmg <= 0.f)
@@ -1248,7 +1249,7 @@ void ARX_PLAYER_LoadHeroAnimsAndMesh(){
 	ARX_INTERACTIVE_Show_Hide_1st(entities.player(), 0);
 	ARX_INTERACTIVE_HideGore(entities.player(), 1);
 	
-	ANIM_Set(&player.bookAnimation[0], herowaitbook);
+	ANIM_Set(player.bookAnimation[0], herowaitbook);
 	player.bookAnimation[0].flags |= EA_LOOP;
 	
 	//todo free
@@ -1389,25 +1390,25 @@ void ARX_PLAYER_Manage_Visual() {
 	
 	io->gameFlags |= GFLAG_ISINTREATZONE;
 	
-	ANIM_USE & ause0 = io->animlayer[0];
-	ANIM_USE & ause1 = io->animlayer[1];
-	ANIM_USE & ause2 = io->animlayer[2];
-	ANIM_USE & ause3 = io->animlayer[3];
+	AnimLayer & layer0 = io->animlayer[0];
+	AnimLayer & layer1 = io->animlayer[1];
+	AnimLayer & layer2 = io->animlayer[2];
+	AnimLayer & layer3 = io->animlayer[3];
 	
-	ause0.next_anim = NULL;
-	ause1.next_anim = NULL;
-	ause2.next_anim = NULL;
-	ause3.next_anim = NULL;
+	layer0.next_anim = NULL;
+	layer1.next_anim = NULL;
+	layer2.next_anim = NULL;
+	layer3.next_anim = NULL;
 	
 	ANIM_HANDLE ** alist = io->anims;
 	
-	if(ause0.flags & EA_FORCEPLAY) {
-		if(ause0.flags & EA_ANIMEND) {
-			ause0.flags &= ~EA_FORCEPLAY;
-			ause0.flags |= EA_STATICANIM;
+	if(layer0.flags & EA_FORCEPLAY) {
+		if(layer0.flags & EA_ANIMEND) {
+			layer0.flags &= ~EA_FORCEPLAY;
+			layer0.flags |= EA_STATICANIM;
 			io->move = io->lastmove = Vec3f_ZERO;
 		} else {
-			ause0.flags &= ~EA_STATICANIM;
+			layer0.flags &= ~EA_STATICANIM;
 			player.pos = g_moveto = player.pos + io->move;
 			io->pos = player.basePosition();
 			goto nochanges;
@@ -1467,8 +1468,8 @@ void ARX_PLAYER_Manage_Visual() {
 		
 		request0_loop = true;
 		
-		if(ause0.cur_anim == alist[ANIM_U_TURN_LEFT]
-		   || ause0.cur_anim == alist[ANIM_U_TURN_LEFT_FIGHT])
+		if(layer0.cur_anim == alist[ANIM_U_TURN_LEFT]
+		   || layer0.cur_anim == alist[ANIM_U_TURN_LEFT_FIGHT])
 		{
 			float fv = PLAYER_ROTATION * 5;
 			long vv = fv;
@@ -1476,13 +1477,13 @@ void ARX_PLAYER_Manage_Visual() {
 			
 			if (io->frameloss < 0) io->frameloss = 0;
 			
-			ause0.ctime -= vv;
+			layer0.ctime -= vv;
 			
-			if(ause0.ctime < 0)
-				ause0.ctime = 0;
+			if(layer0.ctime < 0)
+				layer0.ctime = 0;
 		}
-		else if(ause0.cur_anim == alist[ANIM_U_TURN_RIGHT]
-				 ||	ause0.cur_anim == alist[ANIM_U_TURN_RIGHT_FIGHT])
+		else if(layer0.cur_anim == alist[ANIM_U_TURN_RIGHT]
+				 ||	layer0.cur_anim == alist[ANIM_U_TURN_RIGHT_FIGHT])
 		{
 			long vv = PLAYER_ROTATION * 5;
 			float fv = PLAYER_ROTATION * 5;
@@ -1490,10 +1491,10 @@ void ARX_PLAYER_Manage_Visual() {
 			
 			if (io->frameloss < 0) io->frameloss = 0;
 			
-			ause0.ctime += vv;
+			layer0.ctime += vv;
 			
-			if(ause0.ctime < 0)
-				ause0.ctime = 0;
+			if(layer0.ctime < 0)
+				layer0.ctime = 0;
 		}
 	}
 	
@@ -1568,8 +1569,8 @@ void ARX_PLAYER_Manage_Visual() {
 	}
 	
 	// Finally update anim
-	if(ause1.cur_anim == NULL
-	   && (ause0.cur_anim == alist[ANIM_WAIT] || ause0.cur_anim == alist[ANIM_WAIT_SHORT])
+	if(layer1.cur_anim == NULL
+	   && (layer0.cur_anim == alist[ANIM_WAIT] || layer0.cur_anim == alist[ANIM_WAIT_SHORT])
 	   && !(player.Current_Movement & PLAYER_CROUCH)
 	) {
 		if ((player.Current_Movement & PLAYER_LEAN_LEFT)
@@ -1588,11 +1589,11 @@ void ARX_PLAYER_Manage_Visual() {
 	}
 	
 	if(request3_anim == NULL
-	   && ause3.cur_anim
-	   && (ause3.cur_anim == alist[ANIM_LEAN_RIGHT] || ause3.cur_anim == alist[ANIM_LEAN_LEFT])
+	   && layer3.cur_anim
+	   && (layer3.cur_anim == alist[ANIM_LEAN_RIGHT] || layer3.cur_anim == alist[ANIM_LEAN_LEFT])
 	) {
 		AcquireLastAnim(io);
-		ause3.cur_anim = NULL;
+		layer3.cur_anim = NULL;
 	}
 	
 	if((player.Current_Movement & PLAYER_CROUCH) && !(player.Last_Movement & PLAYER_CROUCH)
@@ -1606,8 +1607,8 @@ void ARX_PLAYER_Manage_Visual() {
 		request0_anim = alist[ANIM_CROUCH_END];
 		request0_loop = false;
 	} else if(player.Current_Movement & PLAYER_CROUCH) {
-		if(ause0.cur_anim == alist[ANIM_CROUCH_START]) {
-			if(!(ause0.flags & EA_ANIMEND)) {
+		if(layer0.cur_anim == alist[ANIM_CROUCH_START]) {
+			if(!(layer0.flags & EA_ANIMEND)) {
 				request0_anim = alist[ANIM_CROUCH_START];
 				request0_loop = false;
 			} else {
@@ -1646,8 +1647,8 @@ void ARX_PLAYER_Manage_Visual() {
 		}
 	}
 	
-	if(ause0.cur_anim == alist[ANIM_CROUCH_END]) {
-		if(!(ause0.flags & EA_ANIMEND))
+	if(layer0.cur_anim == alist[ANIM_CROUCH_END]) {
+		if(!(layer0.flags & EA_ANIMEND))
 			goto nochanges;
 	}
 	
@@ -1686,7 +1687,7 @@ retry:
 			}
 			case JumpDescending: { // Post-synch
 				LAST_JUMP_ENDTIME = (unsigned long)(arxtime);
-				if((ause0.cur_anim == alist[ANIM_JUMP_END] && (ause0.flags & EA_ANIMEND))
+				if((layer0.cur_anim == alist[ANIM_JUMP_END] && (layer0.flags & EA_ANIMEND))
 				   || player.onfirmground) {
 					player.jumpphase = JumpEnd;
 					request0_anim = alist[ANIM_JUMP_END_PART2];
@@ -1697,14 +1698,14 @@ retry:
 			}
 			case JumpEnd: { // Post-synch
 				LAST_JUMP_ENDTIME = (unsigned long)(arxtime);
-				if(ause0.cur_anim == alist[ANIM_JUMP_END_PART2] && (ause0.flags & EA_ANIMEND)) {
+				if(layer0.cur_anim == alist[ANIM_JUMP_END_PART2] && (layer0.flags & EA_ANIMEND)) {
 					AcquireLastAnim(io);
 					player.jumpphase = NotJumping;
 					goto retry;
-				} else if(ause0.cur_anim == alist[ANIM_JUMP_END_PART2]
+				} else if(layer0.cur_anim == alist[ANIM_JUMP_END_PART2]
 						 && glm::abs(player.physics.velocity.x)
 							 + glm::abs(player.physics.velocity.z) > (4.f/TARGET_DT)
-						 && ause0.ctime > 1) {
+						 && layer0.ctime > 1) {
 					AcquireLastAnim(io);
 					player.jumpphase = NotJumping;
 					goto retry;
@@ -1720,32 +1721,32 @@ retry:
 	makechanges:
 		;
 		
-		if(request0_anim && request0_anim != ause0.cur_anim) {
+		if(request0_anim && request0_anim != layer0.cur_anim) {
 			AcquireLastAnim(io);
-			ResetAnim(&ause0);
-			ause0.cur_anim = request0_anim;
-			ause0.flags = EA_STATICANIM;
+			ResetAnim(layer0);
+			layer0.cur_anim = request0_anim;
+			layer0.flags = EA_STATICANIM;
 			
 			if(request0_loop)
-				ause0.flags |= EA_LOOP;
+				layer0.flags |= EA_LOOP;
 			
 			if(request0_stopend)
-				ause0.flags |= EA_STOPEND;
+				layer0.flags |= EA_STOPEND;
 			
 			if(request0_anim == alist[ANIM_U_TURN_LEFT]
 			   || request0_anim == alist[ANIM_U_TURN_RIGHT]
 			   || request0_anim == alist[ANIM_U_TURN_RIGHT_FIGHT]
 			   || request0_anim == alist[ANIM_U_TURN_LEFT_FIGHT]
 			) {
-				ause0.flags |= EA_EXCONTROL;
+				layer0.flags |= EA_EXCONTROL;
 			}
 		}
 		
-		if(request3_anim && request3_anim != ause3.cur_anim) {
+		if(request3_anim && request3_anim != layer3.cur_anim) {
 			AcquireLastAnim(io);
-			ResetAnim(&ause3);
-			ause3.cur_anim = request3_anim;
-			ause3.flags = EA_STATICANIM;
+			ResetAnim(layer3);
+			layer3.cur_anim = request3_anim;
+			layer3.flags = EA_STATICANIM;
 		}
 	}
 	
@@ -2193,8 +2194,9 @@ void PlayerMovementIterate(float DeltaTime) {
 		Vec3f impulse = g_moveto - player.pos;
 		if(impulse != Vec3f_ZERO) {
 			
+			const AnimLayer & layer0 = entities.player()->animlayer[0];
 			float scale = 1.25f / 1000;
-			if(entities.player()->animlayer[0].cur_anim) {
+			if(layer0.cur_anim) {
 				if(player.jumpphase != NotJumping) {
 					if(player.Current_Movement & PLAYER_MOVE_WALK_BACKWARD) {
 						scale = 0.8f / 1000;
@@ -2210,9 +2212,9 @@ void PlayerMovementIterate(float DeltaTime) {
 				} else if(levitate && !player.climbing) {
 					scale = 0.875f / 1000;
 				} else {
-					short idx = entities.player()->animlayer[0].altidx_cur;
-					Vec3f mv = GetAnimTotalTranslate(entities.player()->animlayer[0].cur_anim, idx);
-					float time = entities.player()->animlayer[0].cur_anim->anims[idx]->anim_time;
+					short idx = layer0.altidx_cur;
+					Vec3f mv = GetAnimTotalTranslate(layer0.cur_anim, idx);
+					float time = layer0.cur_anim->anims[idx]->anim_time;
 					scale = glm::length(mv) / time * 0.0125f;
 				}
 			}

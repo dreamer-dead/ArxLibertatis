@@ -501,7 +501,7 @@ void ARX_SPELLS_ManageMagic() {
 
 			ARX_INTERFACE_Combat_Mode(0);
 
-			ResetAnim(&io->animlayer[1]);
+			ResetAnim(io->animlayer[1]);
 			io->animlayer[1].flags &= ~EA_LOOP;
 		}
 
@@ -546,7 +546,7 @@ void ARX_SPELLS_ManageMagic() {
 						g_LastFlarePosition = pos;
 					}
 					
-					if(rnd() > 0.6)
+					if(Random::getf() > 0.6f)
 						AddFlare(pos, 1.f, -1);
 					else
 						AddFlare(pos, 1.f, 3);

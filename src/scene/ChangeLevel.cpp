@@ -675,7 +675,7 @@ static long ARX_CHANGELEVEL_Push_Player(long level) {
 	}
 	
 	//inventaires
-	for(size_t bag = 0; bag < 3; bag++)
+	for(size_t bag = 0; bag < INVENTORY_BAGS; bag++)
 	for(size_t y = 0; y < INVENTORY_Y; y++)
 	for(size_t x = 0; x < INVENTORY_X; x++) {
 		storeIdString(asp->id_inventory[bag][x][y], inventory[bag][x][y].io);
@@ -1775,14 +1775,15 @@ static long ARX_CHANGELEVEL_Pop_Player() {
 		}
 	}
 	
+	assert(SAVED_INVENTORY_BAGS == INVENTORY_BAGS);
 	assert(SAVED_INVENTORY_Y == INVENTORY_Y);
 	assert(SAVED_INVENTORY_X == INVENTORY_X);
 	
-	for(size_t bag = 0; bag < 3; bag++)
+	for(size_t bag = 0; bag < SAVED_INVENTORY_BAGS; bag++)
 	for(size_t y = 0; y < SAVED_INVENTORY_Y; y++)
 	for(size_t x = 0; x < SAVED_INVENTORY_X; x++) {
 		inventory[bag][x][y].io = ConvertToValidIO(asp->id_inventory[bag][x][y]);
-		inventory[bag][x][y].show = asp->inventory_show[bag][x][y];
+		inventory[bag][x][y].show = asp->inventory_show[bag][x][y] != 0;
 	}
 	
 	if(size < pos + (asp->nb_PlayerQuest * 80)) {
@@ -2088,7 +2089,7 @@ static Entity * ARX_CHANGELEVEL_Pop_IO(const std::string & idString, EntityInsta
 		std::copy(ais->animlayer, ais->animlayer + SAVED_MAX_ANIM_LAYERS, io->animlayer);
 		
 		for(long k = 0; k < MAX_ANIM_LAYERS; k++) {
-			ANIM_USE & layer = io->animlayer[k];
+			AnimLayer & layer = io->animlayer[k];
 			
 			long nn = (long)ais->animlayer[k].cur_anim;
 			if(nn == -1) {
@@ -2428,14 +2429,14 @@ static void ARX_CHANGELEVEL_PopAllIO_FINISH(bool reloadflag, bool firstTime) {
 					for(long x = 0; x < inv->m_size.x; x++)
 					for(long y = 0; y < inv->m_size.y; y++) {
 						inv->slot[x][y].io = NULL;
-						inv->slot[x][y].show = 0;
+						inv->slot[x][y].show = false;
 					}
 				} else {
 					for(long x = 0; x < inv->m_size.x; x++)
 					for(long y = 0; y < inv->m_size.y; y++) {
 						inv->slot[x][y].io = ConvertToValidIO(aids->slot_io[x][y]);
 						converted += CONVERT_CREATED;
-						inv->slot[x][y].show = aids->slot_show[x][y];
+						inv->slot[x][y].show = aids->slot_show[x][y] != 0;
 					}
 				}
 			}

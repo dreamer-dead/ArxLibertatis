@@ -56,11 +56,11 @@ class Entity;
 
 struct INVENTORY_SLOT {
 	Entity * io;
-	long show;
+	bool show;
 	
 	INVENTORY_SLOT()
 		: io(NULL)
-		, show(0)
+		, show(false)
 	{}
 };
 
@@ -76,11 +76,12 @@ struct INVENTORY_DATA {
 	{}
 };
 
+const size_t INVENTORY_BAGS = 3;
 const size_t INVENTORY_X = 16;
 const size_t INVENTORY_Y = 3;
 
 // TODO this should be completely wrapped in PlayerInventory!
-extern INVENTORY_SLOT inventory[3][INVENTORY_X][INVENTORY_Y];
+extern INVENTORY_SLOT inventory[INVENTORY_BAGS][INVENTORY_X][INVENTORY_Y];
 
 extern INVENTORY_DATA * SecondaryInventory;
 extern INVENTORY_DATA * TSecondaryInventory;
