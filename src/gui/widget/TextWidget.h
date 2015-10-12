@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Arx Libertatis Team (see the AUTHORS file)
+ * Copyright 2015 Arx Libertatis Team (see the AUTHORS file)
  *
  * This file is part of Arx Libertatis.
  *
@@ -17,41 +17,38 @@
  * along with Arx Libertatis.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ARX_GUI_MAINMENU_H
-#define ARX_GUI_MAINMENU_H
+#ifndef ARX_GUI_WIDGET_TEXTWIDGET_H
+#define ARX_GUI_WIDGET_TEXTWIDGET_H
 
-#include <string>
-
-#include "gui/MenuWidgets.h"
+#include "graphics/Color.h"
 #include "gui/widget/Widget.h"
-#include "gui/widget/WidgetContainer.h"
-#include "math/Types.h"
 
-void MainMenuLeftCreate(MENUSTATE eMenuState);
+class Font;
 
-class MainMenu {
+class TextWidget: public Widget {
+	
 public:
-	bool					bReInitAll;
-	MENUSTATE				eOldMenuState;
-	MENUSTATE				eOldMenuWindowState;
+	std::string m_text;
+	Font * m_font;
+	Color lColor;
+	Color lOldColor;
+	Color lColorHighlight;
+	bool	bSelected;
 	
-	Widget		*	m_selected;
+public:
+	TextWidget(MenuButton id, Font * font, const std::string & text, Vec2i pos = Vec2i_ZERO);
+	virtual ~TextWidget();
 	
-	explicit MainMenu();
-	virtual ~MainMenu();
+	void setColor(Color color) { lColor = color; }
 	
-	void init();
-	
-	MENUSTATE Update();
+	Widget * OnShortCut();
+	bool OnMouseClick();
+	void Update(int time);
 	void Render();
+	void SetText(const std::string & _pText);
+	void RenderMouseOver();
 	
-private:
-	TextureContainer * m_background;
-	WidgetContainer * m_widgets;
-	
-	TextWidget * m_resumeGame;
-	
-	void add(Widget * widget);
+	bool OnMouseDoubleClick();
 };
 
-#endif // ARX_GUI_MAINMENU_H
+#endif // ARX_GUI_WIDGET_TEXTWIDGET_H

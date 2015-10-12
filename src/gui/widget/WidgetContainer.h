@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Arx Libertatis Team (see the AUTHORS file)
+ * Copyright 2015 Arx Libertatis Team (see the AUTHORS file)
  *
  * This file is part of Arx Libertatis.
  *
@@ -17,41 +17,27 @@
  * along with Arx Libertatis.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ARX_GUI_MAINMENU_H
-#define ARX_GUI_MAINMENU_H
+#ifndef ARX_GUI_WIDGET_WIDGETCONTAINER_H
+#define ARX_GUI_WIDGET_WIDGETCONTAINER_H
 
-#include <string>
-
-#include "gui/MenuWidgets.h"
 #include "gui/widget/Widget.h"
-#include "gui/widget/WidgetContainer.h"
-#include "math/Types.h"
 
-void MainMenuLeftCreate(MENUSTATE eMenuState);
-
-class MainMenu {
+class WidgetContainer
+{
 public:
-	bool					bReInitAll;
-	MENUSTATE				eOldMenuState;
-	MENUSTATE				eOldMenuWindowState;
-	
-	Widget		*	m_selected;
-	
-	explicit MainMenu();
-	virtual ~MainMenu();
-	
-	void init();
-	
-	MENUSTATE Update();
-	void Render();
-	
-private:
-	TextureContainer * m_background;
-	WidgetContainer * m_widgets;
-	
-	TextWidget * m_resumeGame;
+	std::vector<Widget *> m_widgets;
+public:
+	WidgetContainer();
+	virtual ~WidgetContainer();
 	
 	void add(Widget * widget);
+	Widget * getAtPos(const Vec2s & mousePos) const;
+	
+	Widget * GetZoneNum(size_t index);
+	Widget * GetZoneWithID(MenuButton zoneId);
+	void Move(const Vec2i & offset);
+	void drawDebug();
+	size_t GetNbZone();
 };
 
-#endif // ARX_GUI_MAINMENU_H
+#endif // ARX_GUI_WIDGET_WIDGETCONTAINER_H

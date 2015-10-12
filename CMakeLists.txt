@@ -767,6 +767,7 @@ set(GRAPHICS_SOURCES
 	src/graphics/effects/SpellEffects.cpp
 	src/graphics/effects/Halo.cpp
 	src/graphics/effects/Lightning.cpp
+	src/graphics/effects/MagicMissile.cpp
 	src/graphics/effects/RotatingCone.cpp
 	src/graphics/effects/Trail.cpp
 	src/graphics/font/Font.cpp
@@ -780,7 +781,6 @@ set(GRAPHICS_SOURCES
 	src/graphics/particle/ParticleManager.cpp
 	src/graphics/particle/ParticleSystem.cpp
 	src/graphics/particle/MagicFlare.cpp
-	src/graphics/spells/Spells01.cpp
 	src/graphics/spells/Spells05.cpp
 	src/graphics/texture/PackedTexture.cpp
 	src/graphics/texture/Texture.cpp
@@ -817,6 +817,15 @@ set(GUI_SOURCES
 	src/gui/hud/HudCommon.cpp
 	src/gui/hud/PlayerInventory.cpp
 	src/gui/hud/SecondaryInventory.cpp
+	src/gui/menu/MenuCursor.cpp
+	src/gui/widget/ButtonWidget.cpp
+	src/gui/widget/CheckboxWidget.cpp
+	src/gui/widget/CycleTextWidget.cpp
+	src/gui/widget/HorizontalPanelWidget.cpp
+	src/gui/widget/SliderWidget.cpp
+	src/gui/widget/TextWidget.cpp
+	src/gui/widget/Widget.cpp
+	src/gui/widget/WidgetContainer.cpp
 )
 
 set(INPUT_SOURCES src/input/Input.cpp)
@@ -1029,7 +1038,7 @@ else()
 	# This means the Boost.Filesystem ABI depends on what C++ version was used
 	# to compile the library - check for that!
 	check_compile(boost_filesystem_abi_matches
-		"${CMAKE_MODULE_PATH}/check_boostfs_cxx11_scoped_enum.cpp"
+		"${CXX11_CHECK_DIR}/check_boostfs_cxx11_scoped_enum.cpp"
 		"scoped enum" "Boost ABI"
 		"${Boost_LIBRARIES}"
 		"mismatch, fixing"

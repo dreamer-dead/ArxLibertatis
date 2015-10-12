@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Arx Libertatis Team (see the AUTHORS file)
+ * Copyright 2015 Arx Libertatis Team (see the AUTHORS file)
  *
  * This file is part of Arx Libertatis.
  *
@@ -17,41 +17,35 @@
  * along with Arx Libertatis.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ARX_GUI_MAINMENU_H
-#define ARX_GUI_MAINMENU_H
+#ifndef ARX_GUI_WIDGET_CHECKBOXWIDGET_H
+#define ARX_GUI_WIDGET_CHECKBOXWIDGET_H
 
-#include <string>
-
-#include "gui/MenuWidgets.h"
 #include "gui/widget/Widget.h"
-#include "gui/widget/WidgetContainer.h"
-#include "math/Types.h"
 
-void MainMenuLeftCreate(MENUSTATE eMenuState);
+class TextWidget;
+class TextureContainer;
 
-class MainMenu {
+class CheckboxWidget : public Widget {
+	
 public:
-	bool					bReInitAll;
-	MENUSTATE				eOldMenuState;
-	MENUSTATE				eOldMenuWindowState;
+	explicit CheckboxWidget(TextWidget * label);
+	virtual ~CheckboxWidget();
 	
-	Widget		*	m_selected;
+	void Move(const Vec2i & offset);
+	bool OnMouseClick();
+	void Update(int time);
 	
-	explicit MainMenu();
-	virtual ~MainMenu();
-	
-	void init();
-	
-	MENUSTATE Update();
+	void renderCommon();
 	void Render();
+	void RenderMouseOver();
+	
+	int					iState;
+	int					iOldState;
 	
 private:
-	TextureContainer * m_background;
-	WidgetContainer * m_widgets;
-	
-	TextWidget * m_resumeGame;
-	
-	void add(Widget * widget);
+	TextureContainer * m_textureOff;
+	TextureContainer * m_textureOn;
+	TextWidget	* pText;
 };
 
-#endif // ARX_GUI_MAINMENU_H
+#endif // ARX_GUI_WIDGET_CHECKBOXWIDGET_H

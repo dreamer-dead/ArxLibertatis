@@ -32,7 +32,6 @@
 #include "game/magic/spells/SpellsLvl03.h"
 #include "graphics/particle/ParticleEffects.h"
 #include "graphics/particle/ParticleManager.h"
-#include "graphics/spells/Spells01.h"
 #include "physics/Collisions.h"
 #include "scene/GameSound.h"
 #include "scene/Interactive.h"
@@ -266,7 +265,13 @@ void MagicMissileSpell::Launch() {
 	pTab.reserve(number);
 	
 	for(size_t i = 0; i < size_t(number); i++) {
-		CMagicMissile * missile = new CMagicMissile(m_mrCheat);
+		CMagicMissile * missile = NULL;
+		if(!m_mrCheat) {
+			missile = new CMagicMissile();
+		} else {
+			missile = new MrMagicMissileFx();
+		}
+		
 		pTab.push_back(missile);
 		
 		Anglef angles(afAlpha, afBeta, 0.f);
@@ -284,12 +289,6 @@ void MagicMissileSpell::Launch() {
 		lMax		= std::max(lMax, lTime);
 		
 		missile->SetDuration(lTime);
-		
-		if(m_mrCheat) {
-			missile->SetColor(Color3f(0.9f, 0.2f, 0.5f));
-		} else {
-			missile->SetColor(Color3f(0.9f, 0.9f, 0.7f) + Color3f(0.1f, 0.1f, 0.3f) * randomColor3f());
-		}
 		
 		missile->lLightId = GetFreeDynLight();
 		

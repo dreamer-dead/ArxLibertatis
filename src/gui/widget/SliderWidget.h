@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Arx Libertatis Team (see the AUTHORS file)
+ * Copyright 2015 Arx Libertatis Team (see the AUTHORS file)
  *
  * This file is part of Arx Libertatis.
  *
@@ -17,41 +17,36 @@
  * along with Arx Libertatis.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ARX_GUI_MAINMENU_H
-#define ARX_GUI_MAINMENU_H
+#ifndef ARX_GUI_WIDGET_SLIDERWIDGET_H
+#define ARX_GUI_WIDGET_SLIDERWIDGET_H
 
-#include <string>
-
-#include "gui/MenuWidgets.h"
+#include "gui/widget/ButtonWidget.h"
 #include "gui/widget/Widget.h"
-#include "gui/widget/WidgetContainer.h"
-#include "math/Types.h"
 
-void MainMenuLeftCreate(MENUSTATE eMenuState);
-
-class MainMenu {
+//! Slider with value in the range [0..10]
+class SliderWidget: public Widget {
+	
 public:
-	bool					bReInitAll;
-	MENUSTATE				eOldMenuState;
-	MENUSTATE				eOldMenuWindowState;
+	SliderWidget(MenuButton id, Vec2i pos);
+	virtual ~SliderWidget();
 	
-	Widget		*	m_selected;
+	void setValue(int value) { m_value = value; }
+	int getValue() const { return m_value; }
 	
-	explicit MainMenu();
-	virtual ~MainMenu();
-	
-	void init();
-	
-	MENUSTATE Update();
+	void Move(const Vec2i & offset);
+	bool OnMouseClick();
+	Widget * OnShortCut() { return NULL; }
+	void Update(int time);
 	void Render();
+	void RenderMouseOver();
+	void EmptyFunction();
 	
 private:
-	TextureContainer * m_background;
-	WidgetContainer * m_widgets;
-	
-	TextWidget * m_resumeGame;
-	
-	void add(Widget * widget);
+	ButtonWidget		*	pLeftButton;
+	ButtonWidget		*	pRightButton;
+	TextureContainer	* pTex1;
+	TextureContainer	* pTex2;
+	int					m_value;
 };
 
-#endif // ARX_GUI_MAINMENU_H
+#endif // ARX_GUI_WIDGET_SLIDERWIDGET_H

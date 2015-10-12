@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Arx Libertatis Team (see the AUTHORS file)
+ * Copyright 2015 Arx Libertatis Team (see the AUTHORS file)
  *
  * This file is part of Arx Libertatis.
  *
@@ -17,41 +17,31 @@
  * along with Arx Libertatis.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ARX_GUI_MAINMENU_H
-#define ARX_GUI_MAINMENU_H
+#ifndef ARX_GUI_WIDGET_HORIZONTALPANELWIDGET_H
+#define ARX_GUI_WIDGET_HORIZONTALPANELWIDGET_H
 
-#include <string>
-
-#include "gui/MenuWidgets.h"
 #include "gui/widget/Widget.h"
-#include "gui/widget/WidgetContainer.h"
-#include "math/Types.h"
 
-void MainMenuLeftCreate(MENUSTATE eMenuState);
-
-class MainMenu {
+class HorizontalPanelWidget : public Widget {
+	
 public:
-	bool					bReInitAll;
-	MENUSTATE				eOldMenuState;
-	MENUSTATE				eOldMenuWindowState;
+	HorizontalPanelWidget();
+	virtual ~HorizontalPanelWidget();
 	
-	Widget		*	m_selected;
+	void Move(const Vec2i & offset);
+	void AddElement(Widget * widget);
+	void AddElementNoCenterIn(Widget * widget);
 	
-	explicit MainMenu();
-	virtual ~MainMenu();
-	
-	void init();
-	
-	MENUSTATE Update();
+	void Update(int time);
 	void Render();
+	bool OnMouseClick() { return false; }
+	Widget * OnShortCut();
+	void RenderMouseOver() { }
+	Widget * IsMouseOver(const Vec2s & mousePos) const;
+	Widget * GetZoneWithID(MenuButton zoneId);
 	
 private:
-	TextureContainer * m_background;
-	WidgetContainer * m_widgets;
-	
-	TextWidget * m_resumeGame;
-	
-	void add(Widget * widget);
+	std::vector<Widget *>	vElement;
 };
 
-#endif // ARX_GUI_MAINMENU_H
+#endif // ARX_GUI_WIDGET_HORIZONTALPANELWIDGET_H
